@@ -1,0 +1,25 @@
+#!/usr/bin/expect
+
+set user root
+set addr 172.18.0.22
+set passwd Abcd1234
+set timeout 10
+
+spawn ssh $user@$addr
+set timeout 10
+ expect {
+        -re "Are you sure you want to continue connecting (yes/no)?" {
+            send "yes\n"
+            expect "$user@$addr's password:"
+            send "$passwd\n"
+        } -re "Enter passphrase for key '/root/.ssh/id_rsa':" {
+            send "\n"
+            expect "password:"
+            send "$passwd\n"
+        } -re "$user@$addr's password:" {
+            send "$passwd\n"
+        } timeout {
+            exit
+    }
+}
+interact
