@@ -1,0 +1,27 @@
+#!/usr/bin/expect -f
+
+set user root
+set addr [ lindex $argv 0 ]
+set passwd [ lindex $argv 1 ]
+set coding [ lindex $argv 2 ]
+set timeout 10
+
+spawn ssh -n -p9797 $user@$addr "$coding"     #cmd some code
+#spawn scp -P9797  /root/taizhang.sh $user@$addr:/root/     #scp some file
+set timeout 60
+ expect {
+        -re "Are you sure you want to continue connecting (yes/no)?" {
+            send "yes\n"
+            expect "$user@$addr's password:"
+            send "$passwd\n"
+        } -re "Enter passphrase for key '/root/.ssh/id_rsa':" {
+            send "\n"
+            expect "password:"
+            send "$passwd\n"
+        } -re "$user@$addr's password:" {
+            send "$passwd\n"
+        } timeout {
+            exit
+    }
+}
+interact
